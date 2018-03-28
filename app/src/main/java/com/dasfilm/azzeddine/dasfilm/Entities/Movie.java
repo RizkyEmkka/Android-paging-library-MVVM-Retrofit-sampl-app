@@ -158,4 +158,56 @@ public class Movie {
     public void setPosterImagePath(String posterImagePath) {
         this.posterImagePath = posterImagePath;
     }
+
+    public CompactMovie getCompactMovie(){
+        return new CompactMovie(id,originalTitle,imdbId,posterImagePath,reviews.size(),reviewsRate,genres);
+    }
+
+    private class CompactMovie{
+        private int id;
+        private String originalTitle;
+        private int imdbId;
+        private String posterImagePath;
+        private int reviewsNumber;
+        private int reviewsRate;
+        private List<String> genres;
+
+        public CompactMovie(int id, String originalTitle, int imdbId, String posterImagePath, int reviewsNumber, int reviewsRate, List<String> genres) {
+            this.id = id;
+            this.originalTitle = originalTitle;
+            this.imdbId = imdbId;
+            this.posterImagePath = posterImagePath;
+            this.reviewsNumber = reviewsNumber;
+            this.reviewsRate = reviewsRate;
+            this.genres = genres;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getOriginalTitle() {
+            return originalTitle;
+        }
+
+        public int getImdbId() {
+            return imdbId;
+        }
+
+        public String getPosterImagePath() {
+            return posterImagePath;
+        }
+
+        public int getReviewsNumber() {
+            return reviewsNumber;
+        }
+
+        public int getReviewsRate() {
+            return reviewsRate;
+        }
+
+        public List<String> getGenres() {
+            return genres;
+        }
+    }
 }
