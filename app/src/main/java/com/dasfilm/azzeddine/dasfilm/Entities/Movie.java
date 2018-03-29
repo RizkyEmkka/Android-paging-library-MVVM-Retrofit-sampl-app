@@ -1,5 +1,7 @@
 package com.dasfilm.azzeddine.dasfilm.Entities;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class Movie {
     private String originalTitle;
     private Date runTime;
     private String status;
+    @SerializedName("tagline")
     private String tagLine;
     private Date releaseDate;
     private String directorFullName;
@@ -22,8 +25,11 @@ public class Movie {
     private String overview;
     private float popularity;
     private String youtubeTrailerKey;
-    private String posterImagePath;
+    @SerializedName("backdrop_path")
+    private String backdropImagePath;
+    private List<String> videosPath;
     private List<Review> reviews;
+    private List<Actor> actors;
 
     public Movie(int id, String originalTitle, List<String> genres) {
         this.id = id;
@@ -151,16 +157,16 @@ public class Movie {
         this.youtubeTrailerKey = youtubeTrailerKey;
     }
 
-    public String getPosterImagePath() {
-        return posterImagePath;
+    public String getBackdropImagePath() {
+        return backdropImagePath;
     }
 
-    public void setPosterImagePath(String posterImagePath) {
-        this.posterImagePath = posterImagePath;
+    public void setBackdropImagePath(String backdropImagePath) {
+        this.backdropImagePath = backdropImagePath;
     }
 
     public CompactMovie getCompactMovie(){
-        return new CompactMovie(id,originalTitle,imdbId,posterImagePath,reviews.size(),reviewsRate,genres);
+        return new CompactMovie(id,originalTitle,imdbId, backdropImagePath,reviews.size(),reviewsRate,genres);
     }
 
     private class CompactMovie{

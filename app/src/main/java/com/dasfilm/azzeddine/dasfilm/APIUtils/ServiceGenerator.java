@@ -9,6 +9,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by azeddine on 3/28/18.
@@ -17,7 +18,8 @@ import retrofit2.Retrofit;
 public class ServiceGenerator {
     private static final String BASE_URL = "https://api.themoviedb.org/3/";
 
-    private static Retrofit.Builder builder = new Retrofit.Builder().baseUrl(BASE_URL);
+    private static Retrofit.Builder builder = new Retrofit.Builder().baseUrl(BASE_URL)
+                                                            .addConverterFactory(GsonConverterFactory.create());
     static Retrofit retrofit = builder.build();
 
     private static HttpLoggingInterceptor logging = new HttpLoggingInterceptor()
@@ -40,7 +42,7 @@ public class ServiceGenerator {
 
     public static <S> S createService(Class<S> serviceClass){
         if(!httpClient.interceptors().contains(logging)){
-            httpClient.addInterceptor(logging);
+        //    httpClient.addInterceptor(logging);
             builder.client(httpClient.build());
             retrofit = builder.build();
         }
