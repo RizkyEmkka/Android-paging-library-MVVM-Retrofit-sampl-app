@@ -17,6 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceGenerator {
     private static final String BASE_URL = "https://api.themoviedb.org/3/";
+    public static final int API_DEFAULT_PAGE_KEY = 1;
 
     private static Retrofit.Builder builder = new Retrofit.Builder().baseUrl(BASE_URL)
                                                             .addConverterFactory(GsonConverterFactory.create());

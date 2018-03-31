@@ -1,4 +1,4 @@
-package com.dasfilm.azzeddine.dasfilm.views.Activities;
+package com.dasfilm.azzeddine.dasfilm.Views.Activities;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;

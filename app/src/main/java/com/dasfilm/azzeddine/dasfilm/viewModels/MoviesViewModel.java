@@ -32,4 +32,7 @@ public class MoviesViewModel extends ViewModel {
         }
         return mMoviesInTheaterList;
     }
+
+
 }
+

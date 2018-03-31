@@ -19,6 +19,7 @@ import retrofit2.http.Query;
 
 public interface TMDBWebService {
 
+
     /**
      * Get a list of movies in theatres.
      */
