@@ -24,7 +24,7 @@ public interface TMDBWebService {
      * Get a list of movies in theatres.
      */
     @GET("movie/now_playing")
-    Call<ResponseBody> getMoviesInTheater(@Query("page") int pageNumber);
+    Call<ResponseBody> getMoviesInTheater(@Query("page") long pageNumber);
 
 
     /**

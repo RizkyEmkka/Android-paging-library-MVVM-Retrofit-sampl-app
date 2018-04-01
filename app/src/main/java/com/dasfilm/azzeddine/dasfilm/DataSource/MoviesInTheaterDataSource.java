@@ -1,8 +1,6 @@
 package com.dasfilm.azzeddine.dasfilm.DataSource;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.paging.LivePagedListBuilder;
 import android.arch.paging.PageKeyedDataSource;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -11,15 +9,13 @@ import com.dasfilm.azzeddine.dasfilm.APIUtils.NetworkState;
 import com.dasfilm.azzeddine.dasfilm.APIUtils.ServiceGenerator;
 import com.dasfilm.azzeddine.dasfilm.Entities.Movie;
 import com.dasfilm.azzeddine.dasfilm.dataModels.TMDBWebService;
-import com.dasfilm.azzeddine.dasfilm.dataRepositories.MoviesRepository;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -56,11 +52,13 @@ public class MoviesInTheaterDataSource extends PageKeyedDataSource<Long,Movie> {
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams<Long> params, @NonNull final LoadInitialCallback<Long, Movie> callback) {
+        Log.d(TAG, "loadInitial: ");
         initialLoading.postValue(NetworkState.LOADING);
         networkState.postValue(NetworkState.LOADING);
         tmdbWebService.getMoviesInTheater(ServiceGenerator.API_DEFAULT_PAGE_KEY).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d(TAG, "onResponse: ");
                 Gson gson = new Gson();
                 JSONObject responseJson;
                 List<Movie> moviesList;
@@ -70,7 +68,8 @@ public class MoviesInTheaterDataSource extends PageKeyedDataSource<Long,Movie> {
                             networkState.postValue(NetworkState.LOADED);
                             responseJson = new JSONObject(response.body().string());
 
-                            moviesList = gson.fromJson(responseJson.getJSONArray("results").toString(), List.class);
+                            moviesList = gson.fromJson(responseJson.getJSONArray("results").toString(), new TypeToken<List<Movie>>(){}.getType());
+                            Log.d(TAG, "onResponse:==== "+moviesList.get(0).getOverview());
                             callback.onResult(moviesList,null, (long) 2);
 
                         } catch (IOException | JSONException e) {
@@ -98,8 +97,10 @@ public class MoviesInTheaterDataSource extends PageKeyedDataSource<Long,Movie> {
 
     @Override
     public void loadAfter(@NonNull final LoadParams<Long> params, @NonNull final LoadCallback<Long, Movie> callback) {
+        Log.d(TAG, "loadAfter: ");
         networkState.postValue(NetworkState.LOADING);
-        tmdbWebService.getMoviesInTheater(ServiceGenerator.API_DEFAULT_PAGE_KEY).enqueue(new Callback<ResponseBody>() {
+        Log.d(TAG, "onResponse: next key "+params.key);
+        tmdbWebService.getMoviesInTheater(params.key).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Gson gson = new Gson();
@@ -112,8 +113,9 @@ public class MoviesInTheaterDataSource extends PageKeyedDataSource<Long,Movie> {
                         networkState.postValue(NetworkState.LOADED);
                         responseJson = new JSONObject(response.body().string());
 
-                        moviesList = gson.fromJson(responseJson.getJSONArray("results").toString(), List.class);
+                        moviesList = gson.fromJson(responseJson.getJSONArray("results").toString(),new TypeToken<List<Movie>>(){}.getType());
                         nextKey = (params.key == responseJson.getInt("total_pages")) ? null : params.key+1;
+                        Log.d(TAG, "onResponse:==== "+moviesList.get(0).getOverview());
                         callback.onResult(moviesList, nextKey);
 
                     } catch (IOException | JSONException e) {

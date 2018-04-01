@@ -1,5 +1,7 @@
 package com.dasfilm.azzeddine.dasfilm.Entities;
 
+import android.support.v7.util.DiffUtil;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
@@ -13,6 +15,7 @@ public class Movie {
     private int id;
     private int imdbId;
     private String originalTitle;
+    private String title;
     private Date runTime;
     private String status;
     @SerializedName("tagline")
@@ -30,6 +33,17 @@ public class Movie {
     private List<String> videosPath;
     private List<Review> reviews;
     private List<Actor> actors;
+    public static final DiffUtil.ItemCallback<Movie> DIFF_CALL = new DiffUtil.ItemCallback<Movie>() {
+        @Override
+        public boolean areItemsTheSame(Movie oldItem, Movie newItem) {
+           return  oldItem.id == newItem.id;
+        }
+
+        @Override
+        public boolean areContentsTheSame(Movie oldItem, Movie newItem) {
+            return  oldItem.id == newItem.id;
+        }
+    };
 
     public Movie(int id, String originalTitle, List<String> genres) {
         this.id = id;
@@ -51,6 +65,14 @@ public class Movie {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public int getImdbId() {
