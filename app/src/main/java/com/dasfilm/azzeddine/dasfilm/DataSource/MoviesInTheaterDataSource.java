@@ -5,11 +5,14 @@ import android.arch.paging.PageKeyedDataSource;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.dasfilm.azzeddine.dasfilm.APIUtils.JSONParser;
 import com.dasfilm.azzeddine.dasfilm.APIUtils.NetworkState;
 import com.dasfilm.azzeddine.dasfilm.APIUtils.ServiceGenerator;
 import com.dasfilm.azzeddine.dasfilm.Entities.Movie;
 import com.dasfilm.azzeddine.dasfilm.dataModels.TMDBWebService;
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
@@ -42,11 +45,12 @@ public class MoviesInTheaterDataSource extends PageKeyedDataSource<Long,Movie> {
         this.retryExecutor = retryExecutor;
     }
 
-    public MutableLiveData getNetworkState() {
+    public MutableLiveData<NetworkState> getNetworkState() {
         return networkState;
     }
 
     public MutableLiveData getInitialLoading() {
+
         return initialLoading;
     }
 
@@ -58,18 +62,15 @@ public class MoviesInTheaterDataSource extends PageKeyedDataSource<Long,Movie> {
         tmdbWebService.getMoviesInTheater(ServiceGenerator.API_DEFAULT_PAGE_KEY).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.d(TAG, "onResponse: ");
-                Gson gson = new Gson();
-                JSONObject responseJson;
+                String responseString;
                 List<Movie> moviesList;
                 if (response.isSuccessful() && response.code() ==200) {
                         try {
+
                             initialLoading.postValue(NetworkState.LOADING);
                             networkState.postValue(NetworkState.LOADED);
-                            responseJson = new JSONObject(response.body().string());
-
-                            moviesList = gson.fromJson(responseJson.getJSONArray("results").toString(), new TypeToken<List<Movie>>(){}.getType());
-                            Log.d(TAG, "onResponse:==== "+moviesList.get(0).getOverview());
+                            responseString = response.body().string();
+                            moviesList = JSONParser.getMovieList(responseString);
                             callback.onResult(moviesList,null, (long) 2);
 
                         } catch (IOException | JSONException e) {
@@ -97,25 +98,26 @@ public class MoviesInTheaterDataSource extends PageKeyedDataSource<Long,Movie> {
 
     @Override
     public void loadAfter(@NonNull final LoadParams<Long> params, @NonNull final LoadCallback<Long, Movie> callback) {
-        Log.d(TAG, "loadAfter: ");
         networkState.postValue(NetworkState.LOADING);
-        Log.d(TAG, "onResponse: next key "+params.key);
         tmdbWebService.getMoviesInTheater(params.key).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Gson gson = new Gson();
                 JSONObject responseJson;
+                String responseString;
                 List<Movie> moviesList;
                 Long nextKey;
+
                 if (response.isSuccessful() && response.code() ==200) {
                     try {
                         initialLoading.postValue(NetworkState.LOADING);
                         networkState.postValue(NetworkState.LOADED);
-                        responseJson = new JSONObject(response.body().string());
 
-                        moviesList = gson.fromJson(responseJson.getJSONArray("results").toString(),new TypeToken<List<Movie>>(){}.getType());
+                        responseString = response.body().string();
+                        moviesList = JSONParser.getMovieList(responseString);
+
+                        responseJson = new JSONObject(responseString);
                         nextKey = (params.key == responseJson.getInt("total_pages")) ? null : params.key+1;
-                        Log.d(TAG, "onResponse:==== "+moviesList.get(0).getOverview());
+
                         callback.onResult(moviesList, nextKey);
 
                     } catch (IOException | JSONException e) {
@@ -134,5 +136,8 @@ public class MoviesInTheaterDataSource extends PageKeyedDataSource<Long,Movie> {
             }
         });
     }
+
+
+
 }
 

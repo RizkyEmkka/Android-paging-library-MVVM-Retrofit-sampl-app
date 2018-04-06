@@ -1,7 +1,11 @@
 package com.dasfilm.azzeddine.dasfilm.Entities;
 
+import android.arch.core.util.Function;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Transformations;
 import android.support.v7.util.DiffUtil;
 
+import com.dasfilm.azzeddine.dasfilm.APIUtils.Image;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
@@ -23,16 +27,20 @@ public class Movie {
     private Date releaseDate;
     private String directorFullName;
     private String writerFullName;
-    private int reviewsRate;
+    private int voteCount;
+    private float voteAverage;
     private List<String> genres;
     private String overview;
     private float popularity;
     private String youtubeTrailerKey;
     @SerializedName("backdrop_path")
-    private String backdropImagePath;
+    private String backdropImageKey;
+    @SerializedName("poster_path")
+    private String posterImageKey;
     private List<String> videosPath;
     private List<Review> reviews;
     private List<Actor> actors;
+
     public static final DiffUtil.ItemCallback<Movie> DIFF_CALL = new DiffUtil.ItemCallback<Movie>() {
         @Override
         public boolean areItemsTheSame(Movie oldItem, Movie newItem) {
@@ -51,28 +59,12 @@ public class Movie {
         this.genres = genres;
     }
 
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
-    }
-
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public int getImdbId() {
@@ -89,6 +81,14 @@ public class Movie {
 
     public void setOriginalTitle(String originalTitle) {
         this.originalTitle = originalTitle;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Date getRunTime() {
@@ -139,12 +139,20 @@ public class Movie {
         this.writerFullName = writerFullName;
     }
 
-    public int getReviewsRate() {
-        return reviewsRate;
+    public int getVoteCount() {
+        return voteCount;
     }
 
-    public void setReviewsRate(int reviewsRate) {
-        this.reviewsRate = reviewsRate;
+    public void setVoteCount(int voteCount) {
+        this.voteCount = voteCount;
+    }
+
+    public float getVoteAverage() {
+        return voteAverage;
+    }
+
+    public void setVoteAverage(float voteAverage) {
+        this.voteAverage = voteAverage;
     }
 
     public List<String> getGenres() {
@@ -179,63 +187,44 @@ public class Movie {
         this.youtubeTrailerKey = youtubeTrailerKey;
     }
 
-    public String getBackdropImagePath() {
-        return backdropImagePath;
+    public String getBackdropImageKey() {
+        return backdropImageKey;
     }
 
-    public void setBackdropImagePath(String backdropImagePath) {
-        this.backdropImagePath = backdropImagePath;
+    public void setBackdropImageKey(String backdropImageKey) {
+        this.backdropImageKey = backdropImageKey;
     }
 
-    public CompactMovie getCompactMovie(){
-        return new CompactMovie(id,originalTitle,imdbId, backdropImagePath,reviews.size(),reviewsRate,genres);
+    public String getPosterImageKey() {
+        return posterImageKey;
     }
 
-    private class CompactMovie{
-        private int id;
-        private String originalTitle;
-        private int imdbId;
-        private String posterImagePath;
-        private int reviewsNumber;
-        private int reviewsRate;
-        private List<String> genres;
-
-        public CompactMovie(int id, String originalTitle, int imdbId, String posterImagePath, int reviewsNumber, int reviewsRate, List<String> genres) {
-            this.id = id;
-            this.originalTitle = originalTitle;
-            this.imdbId = imdbId;
-            this.posterImagePath = posterImagePath;
-            this.reviewsNumber = reviewsNumber;
-            this.reviewsRate = reviewsRate;
-            this.genres = genres;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public String getOriginalTitle() {
-            return originalTitle;
-        }
-
-        public int getImdbId() {
-            return imdbId;
-        }
-
-        public String getPosterImagePath() {
-            return posterImagePath;
-        }
-
-        public int getReviewsNumber() {
-            return reviewsNumber;
-        }
-
-        public int getReviewsRate() {
-            return reviewsRate;
-        }
-
-        public List<String> getGenres() {
-            return genres;
-        }
+    public void setPosterImageKey(String posterImageKey) {
+        this.posterImageKey = posterImageKey;
     }
+
+    public List<String> getVideosPath() {
+        return videosPath;
+    }
+
+    public void setVideosPath(List<String> videosPath) {
+        this.videosPath = videosPath;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public List<Actor> getActors() {
+        return actors;
+    }
+
+    public void setActors(List<Actor> actors) {
+        this.actors = actors;
+    }
+
 }

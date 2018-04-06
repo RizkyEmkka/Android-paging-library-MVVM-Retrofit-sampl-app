@@ -36,9 +36,11 @@ public class MoviesInTheaterViewModel extends ViewModel {
         TMDBWebService webService = ServiceGenerator.createService(TMDBWebService.class);
         MoviesInTheaterDataSourceFactory factory = new MoviesInTheaterDataSourceFactory(executor,webService);
         dataSource =  factory.getMutableLiveData();
+
         networkStateLiveData = Transformations.switchMap(factory.getMutableLiveData(), new Function<MoviesInTheaterDataSource, LiveData<NetworkState>>() {
             @Override
             public LiveData<NetworkState> apply(MoviesInTheaterDataSource source) {
+                Log.d(TAG, "apply: network change");
                 return source.getNetworkState();
             }
         });
@@ -46,7 +48,7 @@ public class MoviesInTheaterViewModel extends ViewModel {
         PagedList.Config pageConfig = (new PagedList.Config.Builder())
                                                 .setEnablePlaceholders(true)
                                                 .setInitialLoadSizeHint(10)
-                                                .setPageSize(50).build();
+                                                .setPageSize(20).build();
 
         moviesInTheaterList = (new LivePagedListBuilder<Long,Movie>(factory,pageConfig))
                                                     .setBackgroundThreadExecutor(executor)
@@ -57,6 +59,10 @@ public class MoviesInTheaterViewModel extends ViewModel {
     public LiveData<PagedList<Movie>> getMoviesInTheaterList() {
         Log.d(TAG, "getMoviesInTheaterList: ");
         return moviesInTheaterList;
+    }
+
+    public LiveData<NetworkState> getNetworkStateLiveData() {
+        return networkStateLiveData;
     }
 }
 

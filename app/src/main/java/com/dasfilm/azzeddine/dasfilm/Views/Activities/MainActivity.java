@@ -10,26 +10,25 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import com.dasfilm.azzeddine.dasfilm.APIUtils.NetworkState;
 import com.dasfilm.azzeddine.dasfilm.Entities.Movie;
 import com.dasfilm.azzeddine.dasfilm.R;
-import com.dasfilm.azzeddine.dasfilm.Views.MoviesInTheatherAdapter;
+import com.dasfilm.azzeddine.dasfilm.Views.Adapters.MoviesInTheaterAdapter;
 import com.dasfilm.azzeddine.dasfilm.viewModels.MoviesInTheaterViewModel;
 
-import java.util.List;
-
-public class HomeActivity extends AppCompatActivity {
-    private static final String TAG = "HomeActivity";
+public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
     private MoviesInTheaterViewModel mMoviesViewModel;
     private RecyclerView mRecyclerView;
-    private MoviesInTheatherAdapter adapter;
+    private MoviesInTheaterAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_main);
         mRecyclerView = findViewById(R.id.list);
 
-        adapter = new MoviesInTheatherAdapter();
+        adapter = new MoviesInTheaterAdapter(this);
 
         mMoviesViewModel = ViewModelProviders.of(this).get(MoviesInTheaterViewModel.class);
         mMoviesViewModel.getMoviesInTheaterList().observe(this, new Observer<PagedList<Movie>>() {
@@ -39,7 +38,14 @@ public class HomeActivity extends AppCompatActivity {
                 adapter.submitList(movies);
             }
         });
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        mMoviesViewModel.getNetworkStateLiveData().observe(this, new Observer<NetworkState>() {
+            @Override
+            public void onChanged(@Nullable NetworkState networkState) {
+                Log.d(TAG, "onChanged: network state changed");
+                adapter.setNetworkState(networkState);
+            }
+        });
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
         mRecyclerView.setAdapter(adapter);
     }
 }
