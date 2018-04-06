@@ -64,12 +64,7 @@ public class MoviesInTheaterAdapter extends PagedListAdapter<Movie,RecyclerView.
         if( holder instanceof MovieViewHolder){
             MovieViewHolder movieViewHolder = (MovieViewHolder) holder;
             Movie movie = getItem(position);
-            movieViewHolder.movieTitleTextView.setMaxTextChar(15);
-            movieViewHolder.movieTitleTextView.setText(movie.getTitle());
-            movieViewHolder.reviewsNumberTextView.setText(String.valueOf(movie.getVoteCount()));
-            image = new Image(movie.getPosterImageKey());
-            Glide.with(mContext).load(image.getLowQualityImagePath()).into(((MovieViewHolder) holder).moviePosterImageView);
-           movieViewHolder.ratingBar.setRating(movie.getVoteAverage()*5/10);
+            movieViewHolder.bind(movie,mContext);
 
         }
 
@@ -101,6 +96,14 @@ public class MoviesInTheaterAdapter extends PagedListAdapter<Movie,RecyclerView.
             reviewsNumberTextView = itemView.findViewById(R.id.reviews_number);
             moviePosterImageView = itemView.findViewById(R.id.movie_poster);
             ratingBar = itemView.findViewById(R.id.movie_rating_bar);
+        }
+        public void bind(Movie movie,Context context){
+            movieTitleTextView.setMaxTextChar(15);
+            movieTitleTextView.setText(movie.getTitle());
+            reviewsNumberTextView.setText(String.valueOf(movie.getVoteCount())+" "+context.getString(R.string.reviews));
+            Image image = new Image(movie.getPosterImageKey());
+            Glide.with(context).load(image.getLowQualityImagePath()).into(moviePosterImageView);
+            ratingBar.setRating(movie.getVoteAverage()*5/10);
         }
     }
     private static class ProgressViewHolder extends RecyclerView.ViewHolder{
